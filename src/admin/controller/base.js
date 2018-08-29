@@ -58,6 +58,7 @@ module.exports = class extends think.Controller {
         this.ctx.body = noAuth;
         return false;
       }
+      this.ctx.state.userName = userName;
     }
   }
 };
