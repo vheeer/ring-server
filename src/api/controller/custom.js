@@ -63,6 +63,26 @@ class Controller extends Base {
   }
   async getuserinfoAction() {
     const result = await this.model('custom').getuserinfo(this.ctx.state.user_id);
+    // 如果有关联查询，把查询结果扁平化（comment）
+    [ result ].forEach(row => {
+      // 单条数据记录
+      Object.keys(row).forEach(key => {
+        // 单个字段
+        if (row[key] instanceof Object) {
+          // 对象字段
+          Object.keys(row[key]).forEach(relationKey => {
+            row[key + '_' + relationKey] = row[key][relationKey];
+          });
+          delete row[key];
+        }
+      });
+    });
+    return this.success(result);
+  }
+  async registerAction() {
+    const { username, password } = this.post();
+    const thisTime = parseInt(Date.now() / 1000);
+    const result = await this.model('account').add({ username, password, custom_id: this.ctx.state.user_id, add_time: thisTime });
     return this.success(result);
   }
 }

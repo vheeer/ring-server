@@ -66,6 +66,20 @@ module.exports = class extends Base {
 
     // 查询用户信息
     const newUserInfo = await this.model('custom').getuserinfo(userId);
+    // 如果有关联查询，把查询结果扁平化（comment）
+    [ newUserInfo ].forEach(row => {
+      // 单条数据记录
+      Object.keys(row).forEach(key => {
+        // 单个字段
+        if (row[key] instanceof Object) {
+          // 对象字段
+          Object.keys(row[key]).forEach(relationKey => {
+            row[key + '_' + relationKey] = row[key][relationKey];
+          });
+          delete row[key];
+        }
+      });
+    });
 
     // 更新登录信息
     userId = await this.model('custom').where({ id: userId }).update({

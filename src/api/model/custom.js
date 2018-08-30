@@ -1,4 +1,13 @@
 export default class extends think.Model {
+  get relation() {
+    return {
+      account: {
+        model: 'account',
+        type: think.Model.HAS_ONE,
+        field: 'id, username'
+      }
+    };
+  }
   async getuserinfo(userId) {
     const newUserInfo = await this.field([
       'id',
